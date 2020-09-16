@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'dart:convert';
-import 'package:temple/screens/year_temple_display_screen.dart';
+
+import 'screens/year_temple_display_screen.dart';
 
 class TempleList extends StatefulWidget {
   @override
@@ -9,94 +8,86 @@ class TempleList extends StatefulWidget {
 }
 
 class _TempleListState extends State<TempleList> {
-  List<String> years = List();
+  List<String> _yearlist = List();
 
+  /**
+   * 初期動作
+   */
   @override
   void initState() {
     super.initState();
 
-    _getTempleData();
+    _makeDefaultDisplayData();
   }
 
-  _getTempleData() async {
-    Response response =
-        await get('http://worldtimeapi.org/api/timezone/Asia/Tokyo');
-    Map data = jsonDecode(response.body);
-    String datetime = data['datetime'];
-    String offset = data['utc_offset'].substring(1, 3);
+  /**
+   * 初期データ作成
+   */
+  void _makeDefaultDisplayData() async {
+    List explodedDate = DateTime.now().toString().split(' ');
+    List explodedSelectedDate = explodedDate[0].split('-');
 
-    DateTime now = DateTime.parse(datetime);
-    now = now.add(Duration(hours: int.parse(offset)));
-
-    List<String> explodedNow = (now).toString().split(' ');
-    List<String> explodedNowDate = (explodedNow[0]).split('-');
-    int end_year = int.parse(explodedNowDate[0]).toInt();
-
-    years.add('image');
-    for (int i = end_year; i >= 2014; i--) {
-      years.add(i.toString());
+    for (int i = int.parse(explodedSelectedDate[0]); i >= 2014; i--) {
+      _yearlist.add(i.toString());
     }
 
     setState(() {});
   }
 
+  /**
+   * 画面描画
+   */
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('temple'),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _yearList(),
+    return Column(
+      children: <Widget>[
+        Container(
+          child: Image.asset('assets/image/temple.png'),
         ),
-      ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _yearlist.length,
+            itemBuilder: (context, int position) =>
+                _listItem(position: position),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _yearList() {
-    return ListView.builder(
-      itemCount: years.length,
-      itemBuilder: (context, int position) => _listItem(position),
-    );
-  }
-
-  Widget _listItem(int position) {
+  /**
+   * リストアイテム表示
+   */
+  Widget _listItem({int position}) {
     return Card(
       elevation: 10.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      color: Colors.grey[900],
       child: ListTile(
-        title: (years[position] == "image")
-            ? _getTempleImage()
-            : Text(
-                "${years[position]}",
-                style: TextStyle(color: Colors.white, fontFamily: 'Roboto'),
-              ),
-        onTap: () => _goYearTempleDisplayScreen(years[position]),
+        title: DefaultTextStyle(
+          style: TextStyle(fontSize: 10.0),
+          child: Text('${_yearlist[position]}'),
+        ),
+        onTap: () =>
+            _goYearTempleDisplayScreen(context: context, position: position),
       ),
     );
   }
 
-  _goYearTempleDisplayScreen(String year) {
-    if (year == "image") {
-      return;
-    }
+  /**
+   * 画面遷移（_goYearTempleDisplayScreen）
+   */
+  void _goYearTempleDisplayScreen({BuildContext context, int position}) {
+    var year = _yearlist[position];
 
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => YearTempleDisplayScreen(year: year)));
-  }
-
-  _getTempleImage() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-      child: Image.asset('assets/image/temple.png'),
+      context,
+      MaterialPageRoute(
+        builder: (context) => YearTempleDisplayScreen(
+          year: year,
+        ),
+      ),
     );
   }
 }

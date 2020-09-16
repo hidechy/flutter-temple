@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:temple/parts/temple_photo_data.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class TemplePhotoDisplayScreen extends StatefulWidget {
   final String date;
-
-  TemplePhotoDisplayScreen({@required this.date});
+  final String temple;
+  final String address;
+  final String station;
+  TemplePhotoDisplayScreen({
+    @required this.date,
+    @required this.temple,
+    @required this.address,
+    @required this.station,
+  });
 
   @override
   _TemplePhotoDisplayScreenState createState() =>
@@ -12,22 +20,34 @@ class TemplePhotoDisplayScreen extends StatefulWidget {
 }
 
 class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
-  String date;
-  List<String> templePhotoData = List();
+  List<String> _templePhotoData = List();
 
+  /**
+   * 初期動作
+   */
   @override
   void initState() {
     super.initState();
-    _getSamedayData();
+
+    _makeDefaultDisplayData();
   }
 
-  _getSamedayData() async {
-    date = widget.date;
+  /**
+   * 初期データ作成
+   */
+  void _makeDefaultDisplayData() async {
+    Response response =
+        await get('http://toyohide.work/Temple/${widget.date}/templephotoapi');
 
-    TemplePhotoData instance = TemplePhotoData(date: date);
-    await instance.getData();
+    if (response != null) {
+      Map data = jsonDecode(response.body);
 
-    templePhotoData = instance.templePhotoData;
+      for (int i = 0; i < data['data'].length; i++) {
+        _templePhotoData.add(data['data'][i]);
+      }
+    }
+
+    print(_templePhotoData);
 
     setState(() {});
   }
@@ -36,71 +56,52 @@ class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.date),
+        title: Text('${widget.date}'),
         centerTitle: true,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(10.0),
-          child: _templePhotoList(),
-        ),
+      body: Column(
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              color: Colors.black.withOpacity(0.3),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                    '${widget.temple}\n${widget.address}\n${widget.station}'),
+              ),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _templePhotoData.length,
+              itemBuilder: (context, int position) =>
+                  _listItem(position: position),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _templePhotoList() {
-    return ListView.builder(
-      itemCount: templePhotoData.length,
-      itemBuilder: (context, int position) => _listItem(position),
-    );
-  }
-
-  Widget _listItem(int position) {
+  /**
+   * リストアイテム表示
+   */
+  Widget _listItem({int position}) {
     return Card(
       elevation: 10.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
-      color: Colors.grey[900],
       child: ListTile(
-        title: templePhotoDisplay(templePhotoData[position], position),
-      ),
-    );
-  }
-
-  Widget templePhotoDisplay(String templePhotoData, int position) {
-    if (position == 0) {
-      List<String> explodedTemplePhotoData = (templePhotoData).split('\n');
-      return Padding(
-        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-        child: Container(
-          color: Colors.black12,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  explodedTemplePhotoData[0],
-                  style: TextStyle(fontSize: 20.0),
-                ),
-                Divider(
-                  color: Colors.indigo,
-                  height: 20.0,
-                  indent: 20.0,
-                  endIndent: 20.0,
-                ),
-                Text(explodedTemplePhotoData[1]),
-                Text(explodedTemplePhotoData[2]),
-              ],
-            ),
-          ),
+        title: DefaultTextStyle(
+          style: TextStyle(fontSize: 10.0),
+          child: Image.network(_templePhotoData[position]),
         ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-      child: Image.network(templePhotoData),
+      ),
     );
   }
 }
