@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter_advanced_networkimage/transition.dart';
+import 'package:temple/screens/temple_photo_screen.dart';
 
 class TemplePhotoDisplayScreen extends StatefulWidget {
   final String date;
@@ -76,10 +79,29 @@ class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _templePhotoData.length,
-              itemBuilder: (context, int position) =>
-                  _listItem(position: position),
+            child: CustomScrollView(
+              slivers: <Widget>[
+                SliverGrid.count(
+                  crossAxisCount: 3,
+                  children: (_templePhotoData.isEmpty)
+                      ? [Container()]
+                      : List.generate(
+                          _templePhotoData.length,
+                          (int index) => InkWell(
+                            onTap: () => _openPhotoScreen(context, index),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TransitionToImage(
+                                image: AdvancedNetworkImage(
+                                  _templePhotoData[index],
+                                  useDiskCache: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              ],
             ),
           ),
         ],
@@ -87,19 +109,13 @@ class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
     );
   }
 
-  /**
-   * リストアイテム表示
-   */
-  Widget _listItem({int position}) {
-    return Card(
-      elevation: 10.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      child: ListTile(
-        title: DefaultTextStyle(
-          style: TextStyle(fontSize: 10.0),
-          child: Image.network(_templePhotoData[position]),
+  _openPhotoScreen(BuildContext context, int index) {
+    var photo = _templePhotoData[index];
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TemplePhotoScreen(
+          photo: photo,
         ),
       ),
     );

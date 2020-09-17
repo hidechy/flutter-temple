@@ -16,6 +16,7 @@ dependencies:
   http: ^0.12.1
   intl: ^0.16.1
   flutter_native_splash: ^0.1.9
+  flutter_advanced_networkimage: ^0.7.0
 
 dev_dependencies:
   flutter_test:
