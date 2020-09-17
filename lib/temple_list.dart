@@ -39,17 +39,29 @@ class _TempleListState extends State<TempleList> {
    */
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: <Widget>[
-        Container(
-          child: Image.asset('assets/image/temple.png'),
+        Image.asset(
+          'assets/image/bg.png',
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.cover,
+          color: Colors.black.withOpacity(0.7),
+          colorBlendMode: BlendMode.darken,
         ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: _yearlist.length,
-            itemBuilder: (context, int position) =>
-                _listItem(position: position),
-          ),
+        Column(
+          children: <Widget>[
+            Container(
+              child: Image.asset('assets/image/temple.png'),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _yearlist.length,
+                itemBuilder: (context, int position) =>
+                    _listItem(position: position),
+              ),
+            ),
+          ],
         ),
       ],
     );

@@ -14,14 +14,26 @@ class _TemplePhotoScreenState extends State<TemplePhotoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: TransitionToImage(
-          image: AdvancedNetworkImage(
-            widget.photo,
-            useDiskCache: true,
+      body: Stack(
+        children: <Widget>[
+          Image.asset(
+            'assets/image/bg.png',
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.7),
+            colorBlendMode: BlendMode.darken,
           ),
-        ),
+          Container(
+            alignment: Alignment.center,
+            child: TransitionToImage(
+              image: AdvancedNetworkImage(
+                widget.photo,
+                useDiskCache: true,
+              ),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,

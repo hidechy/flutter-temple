@@ -59,9 +59,22 @@ class _YearTempleDisplayScreenState extends State<YearTempleDisplayScreen> {
         title: Text('${widget.year}'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: _templeData.length,
-        itemBuilder: (context, int position) => _listItem(position: position),
+      body: Stack(
+        children: <Widget>[
+          Image.asset(
+            'assets/image/bg.png',
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.7),
+            colorBlendMode: BlendMode.darken,
+          ),
+          ListView.builder(
+            itemCount: _templeData.length,
+            itemBuilder: (context, int position) =>
+                _listItem(position: position),
+          ),
+        ],
       ),
     );
   }

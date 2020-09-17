@@ -62,47 +62,65 @@ class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
         title: Text('${widget.date}'),
         centerTitle: true,
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          Container(
+          Image.asset(
+            'assets/image/bg.png',
             width: double.infinity,
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              color: Colors.black.withOpacity(0.3),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                    '${widget.temple}\n${widget.address}\n${widget.station}'),
-              ),
-            ),
+            height: double.infinity,
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.7),
+            colorBlendMode: BlendMode.darken,
           ),
-          Expanded(
-            child: CustomScrollView(
-              slivers: <Widget>[
-                SliverGrid.count(
-                  crossAxisCount: 3,
-                  children: (_templePhotoData.isEmpty)
-                      ? [Container()]
-                      : List.generate(
-                          _templePhotoData.length,
-                          (int index) => InkWell(
-                            onTap: () => _openPhotoScreen(context, index),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: TransitionToImage(
-                                image: AdvancedNetworkImage(
-                                  _templePhotoData[index],
-                                  useDiskCache: true,
+          Column(
+            children: <Widget>[
+              Container(
+                width: double.infinity,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  color: Colors.black.withOpacity(0.3),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(
+                        '${widget.temple}\n${widget.address}\n${widget.station}'),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  color: Colors.black.withOpacity(0.3),
+                  child: CustomScrollView(
+                    slivers: <Widget>[
+                      SliverGrid.count(
+                        crossAxisCount: 3,
+                        children: (_templePhotoData.isEmpty)
+                            ? [Container()]
+                            : List.generate(
+                                _templePhotoData.length,
+                                (int index) => InkWell(
+                                  onTap: () => _openPhotoScreen(context, index),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: TransitionToImage(
+                                      image: AdvancedNetworkImage(
+                                        _templePhotoData[index],
+                                        useDiskCache: true,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),
