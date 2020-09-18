@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:temple/screens/temple_photo_thumbnail_screen.dart';
+import 'dart:convert';
 
-import 'screens/year_temple_display_screen.dart';
+import 'screens/temple_photo_thumbnail_screen.dart';
 
 class TempleList extends StatefulWidget {
+  final String year;
+  TempleList({@required this.year});
+
   @override
   _TempleListState createState() => _TempleListState();
 }
 
 class _TempleListState extends State<TempleList> {
-  List<String> _yearlist = List();
+  List<DropdownMenuItem<String>> _dropdownYears = List();
+
+  String _selectedYear = '';
+
+  List<Map<dynamic, dynamic>> _templeData = List();
 
   /**
    * 初期動作
@@ -28,7 +38,32 @@ class _TempleListState extends State<TempleList> {
     List explodedSelectedDate = explodedDate[0].split('-');
 
     for (int i = int.parse(explodedSelectedDate[0]); i >= 2014; i--) {
-      _yearlist.add(i.toString());
+      _dropdownYears.add(
+        DropdownMenuItem(
+          value: i.toString(),
+          child: Container(
+            child: Text('${i.toString()}'),
+          ),
+        ),
+      );
+    }
+
+    _selectedYear = (widget.year == '') ? '2020' : widget.year;
+
+    Response response =
+        await get('http://toyohide.work/Temple/${_selectedYear}/templelistapi');
+
+    if (response != null) {
+      Map data = jsonDecode(response.body);
+
+      for (int i = 0; i < data['data'].length; i++) {
+        var _map = Map();
+        _map['date'] = data['data'][i]['date'];
+        _map['temple'] = data['data'][i]['temple'];
+        _map['address'] = data['data'][i]['address'];
+        _map['station'] = data['data'][i]['station'];
+        _templeData.add(_map);
+      }
     }
 
     setState(() {});
@@ -39,31 +74,39 @@ class _TempleListState extends State<TempleList> {
    */
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Image.asset(
-          'assets/image/bg.png',
-          width: double.infinity,
-          height: double.infinity,
-          fit: BoxFit.cover,
-          color: Colors.black.withOpacity(0.7),
-          colorBlendMode: BlendMode.darken,
-        ),
-        Column(
-          children: <Widget>[
-            Container(
-              child: Image.asset('assets/image/temple.png'),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _yearlist.length,
-                itemBuilder: (context, int position) =>
-                    _listItem(position: position),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('${_selectedYear}'),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Image.asset(
+            'assets/image/bg.png',
+            width: double.infinity,
+            height: double.infinity,
+            fit: BoxFit.cover,
+            color: Colors.black.withOpacity(0.7),
+            colorBlendMode: BlendMode.darken,
+          ),
+          Column(
+            children: <Widget>[
+              DropdownButton(
+                dropdownColor: Colors.black.withOpacity(0.1),
+                items: _dropdownYears,
+                value: _selectedYear,
+                onChanged: (value) => _goTempleList(value: value),
               ),
-            ),
-          ],
-        ),
-      ],
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _templeData.length,
+                  itemBuilder: (context, int position) =>
+                      _listItem(position: position),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -72,32 +115,46 @@ class _TempleListState extends State<TempleList> {
    */
   Widget _listItem({int position}) {
     return Card(
+      color: Colors.black.withOpacity(0.3),
       elevation: 10.0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: ListTile(
-        title: DefaultTextStyle(
-          style: TextStyle(fontSize: 10.0),
-          child: Text('${_yearlist[position]}'),
-        ),
+        title: Text(
+            '${_templeData[position]['date']}\n${_templeData[position]['temple']}'),
         onTap: () =>
-            _goYearTempleDisplayScreen(context: context, position: position),
+            _goTemplePhotoDisplayScreen(context: context, position: position),
       ),
     );
   }
 
   /**
-   * 画面遷移（_goYearTempleDisplayScreen）
+   * 画面遷移（TempleList）
    */
-  void _goYearTempleDisplayScreen({BuildContext context, int position}) {
-    var year = _yearlist[position];
+  _goTempleList({value}) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TempleList(
+          year: value,
+        ),
+      ),
+    );
+  }
 
+  /**
+   * 画面遷移（TemplePhotoDisplayScreen）
+   */
+  _goTemplePhotoDisplayScreen({BuildContext context, int position}) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => YearTempleDisplayScreen(
-          year: year,
+        builder: (context) => TemplePhotoThumbnailScreen(
+          date: _templeData[position]['date'],
+          temple: _templeData[position]['temple'],
+          address: _templeData[position]['address'],
+          station: _templeData[position]['station'],
         ),
       ),
     );

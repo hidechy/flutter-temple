@@ -5,12 +5,12 @@ import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:temple/screens/temple_photo_screen.dart';
 
-class TemplePhotoDisplayScreen extends StatefulWidget {
+class TemplePhotoThumbnailScreen extends StatefulWidget {
   final String date;
   final String temple;
   final String address;
   final String station;
-  TemplePhotoDisplayScreen({
+  TemplePhotoThumbnailScreen({
     @required this.date,
     @required this.temple,
     @required this.address,
@@ -18,11 +18,12 @@ class TemplePhotoDisplayScreen extends StatefulWidget {
   });
 
   @override
-  _TemplePhotoDisplayScreenState createState() =>
-      _TemplePhotoDisplayScreenState();
+  _TemplePhotoThumbnailScreenState createState() =>
+      _TemplePhotoThumbnailScreenState();
 }
 
-class _TemplePhotoDisplayScreenState extends State<TemplePhotoDisplayScreen> {
+class _TemplePhotoThumbnailScreenState
+    extends State<TemplePhotoThumbnailScreen> {
   List<String> _templePhotoData = List();
 
   /**

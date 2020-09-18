@@ -12,7 +12,9 @@ class MyApp extends StatelessWidget {
       title: '参拝記録',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(brightness: Brightness.dark, fontFamily: "Yomogi"),
-      home: TempleList(),
+      home: TempleList(
+        year: '',
+      ),
     );
   }
 }
