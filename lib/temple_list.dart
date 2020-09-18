@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:temple/screens/temple_photo_thumbnail_screen.dart';
 import 'dart:convert';
 
-import 'screens/temple_photo_thumbnail_screen.dart';
+import 'screens/temple_thumbnail_screen.dart';
 
 class TempleList extends StatefulWidget {
   final String year;
@@ -156,7 +155,7 @@ class _TempleListState extends State<TempleList> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TemplePhotoThumbnailScreen(
+        builder: (context) => TempleThumbnailScreen(
           date: _templeData[position]['date'],
           temple: _templeData[position]['temple'],
           address: _templeData[position]['address'],
