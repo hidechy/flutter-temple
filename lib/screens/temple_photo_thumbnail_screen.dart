@@ -48,6 +48,11 @@ class _TemplePhotoThumbnailScreenState
 
       for (int i = 0; i < data['data'].length; i++) {
         var _map = Map();
+
+        var ex_data = (data['data'][i]).split('/');
+        var ex_data_last = (ex_data[ex_data.length - 1]).split('.');
+        _map['id'] = ex_data_last[0];
+
         _map['photo'] = data['data'][i];
 
         _templePhotoData.add(_map);
@@ -59,6 +64,9 @@ class _TemplePhotoThumbnailScreenState
     setState(() {});
   }
 
+  /**
+   * 画面描画
+   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,10 +118,13 @@ class _TemplePhotoThumbnailScreenState
                                   onTap: () => _openPhotoScreen(context, index),
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: TransitionToImage(
-                                      image: AdvancedNetworkImage(
-                                        _templePhotoData[index]['photo'],
-                                        useDiskCache: true,
+                                    child: Hero(
+                                      tag: _templePhotoData[index]['id'],
+                                      child: TransitionToImage(
+                                        image: AdvancedNetworkImage(
+                                          _templePhotoData[index]['photo'],
+                                          useDiskCache: true,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -131,6 +142,9 @@ class _TemplePhotoThumbnailScreenState
     );
   }
 
+  /**
+   * 画面遷移（TemplePhotoScreen）
+   */
   _openPhotoScreen(BuildContext context, int index) {
     var photo = _templePhotoData[index];
     Navigator.push(

@@ -11,6 +11,9 @@ class TemplePhotoScreen extends StatefulWidget {
 }
 
 class _TemplePhotoScreenState extends State<TemplePhotoScreen> {
+  /**
+   * 画面描画
+   */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +29,13 @@ class _TemplePhotoScreenState extends State<TemplePhotoScreen> {
           ),
           Container(
             alignment: Alignment.center,
-            child: TransitionToImage(
-              image: AdvancedNetworkImage(
-                widget.photo['photo'],
-                useDiskCache: true,
+            child: Hero(
+              tag: widget.photo['id'],
+              child: TransitionToImage(
+                image: AdvancedNetworkImage(
+                  widget.photo['photo'],
+                  useDiskCache: true,
+                ),
               ),
             ),
           ),
