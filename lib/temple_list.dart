@@ -90,11 +90,17 @@ class _TempleListState extends State<TempleList> {
           ),
           Column(
             children: <Widget>[
-              DropdownButton(
-                dropdownColor: Colors.black.withOpacity(0.1),
-                items: _dropdownYears,
-                value: _selectedYear,
-                onChanged: (value) => _goTempleList(value: value),
+              Container(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton(
+                    dropdownColor: Colors.black.withOpacity(0.1),
+                    items: _dropdownYears,
+                    value: _selectedYear,
+                    onChanged: (value) => _goTempleList(value: value),
+                  ),
+                ),
               ),
               Expanded(
                 child: ListView.builder(

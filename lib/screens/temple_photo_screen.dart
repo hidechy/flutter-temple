@@ -3,7 +3,7 @@ import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_advanced_networkimage/transition.dart';
 
 class TemplePhotoScreen extends StatefulWidget {
-  final String photo;
+  final Map photo;
   TemplePhotoScreen({@required this.photo});
 
   @override
@@ -28,7 +28,7 @@ class _TemplePhotoScreenState extends State<TemplePhotoScreen> {
             alignment: Alignment.center,
             child: TransitionToImage(
               image: AdvancedNetworkImage(
-                widget.photo,
+                widget.photo['photo'],
                 useDiskCache: true,
               ),
             ),

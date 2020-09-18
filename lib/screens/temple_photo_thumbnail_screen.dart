@@ -24,7 +24,7 @@ class TemplePhotoThumbnailScreen extends StatefulWidget {
 
 class _TemplePhotoThumbnailScreenState
     extends State<TemplePhotoThumbnailScreen> {
-  List<String> _templePhotoData = List();
+  List<Map<dynamic, dynamic>> _templePhotoData = List();
 
   /**
    * 初期動作
@@ -47,7 +47,10 @@ class _TemplePhotoThumbnailScreenState
       Map data = jsonDecode(response.body);
 
       for (int i = 0; i < data['data'].length; i++) {
-        _templePhotoData.add(data['data'][i]);
+        var _map = Map();
+        _map['photo'] = data['data'][i];
+
+        _templePhotoData.add(_map);
       }
     }
 
@@ -109,7 +112,7 @@ class _TemplePhotoThumbnailScreenState
                                     padding: const EdgeInsets.all(8.0),
                                     child: TransitionToImage(
                                       image: AdvancedNetworkImage(
-                                        _templePhotoData[index],
+                                        _templePhotoData[index]['photo'],
                                         useDiskCache: true,
                                       ),
                                     ),
