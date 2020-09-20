@@ -6,15 +6,9 @@ import 'package:flutter_advanced_networkimage/transition.dart';
 import 'package:temple/screens/temple_photo_screen.dart';
 
 class TempleThumbnailScreen extends StatefulWidget {
-  final String date;
-  final String temple;
-  final String address;
-  final String station;
+  final Map data;
   TempleThumbnailScreen({
-    @required this.date,
-    @required this.temple,
-    @required this.address,
-    @required this.station,
+    @required this.data,
   });
 
   @override
@@ -38,8 +32,8 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
    * 初期データ作成
    */
   void _makeDefaultDisplayData() async {
-    Response response =
-        await get('http://toyohide.work/Temple/${widget.date}/templephotoapi');
+    Response response = await get(
+        'http://toyohide.work/Temple/${widget.data['date']}/templephotoapi');
 
     if (response != null) {
       Map data = jsonDecode(response.body);
@@ -57,8 +51,6 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
       }
     }
 
-    print(_templePhotoData);
-
     setState(() {});
   }
 
@@ -69,7 +61,7 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.date}'),
+        title: Text('${widget.data['date']}'),
         centerTitle: true,
       ),
       body: Stack(
@@ -94,7 +86,7 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Text(
-                        '${widget.temple}\n${widget.address}\n${widget.station}'),
+                        '${widget.data['temple']}\n${widget.data['address']}\n${widget.data['station']}'),
                   ),
                 ),
               ),

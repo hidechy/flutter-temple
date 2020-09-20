@@ -19,6 +19,8 @@ class _TempleListState extends State<TempleList> {
 
   List<Map<dynamic, dynamic>> _templeData = List();
 
+  bool isLoading = false;
+
   /**
    * 初期動作
    */
@@ -63,6 +65,8 @@ class _TempleListState extends State<TempleList> {
         _map['station'] = data['data'][i]['station'];
         _templeData.add(_map);
       }
+
+      isLoading = true;
     }
 
     setState(() {});
@@ -102,11 +106,18 @@ class _TempleListState extends State<TempleList> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: _templeData.length,
-                  itemBuilder: (context, int position) =>
-                      _listItem(position: position),
-                ),
+                child: (isLoading)
+                    ? ListView.builder(
+                        itemCount: _templeData.length,
+                        itemBuilder: (context, int position) =>
+                            _listItem(position: position),
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          CircularProgressIndicator(),
+                        ],
+                      ),
               ),
             ],
           ),
@@ -156,10 +167,7 @@ class _TempleListState extends State<TempleList> {
       context,
       MaterialPageRoute(
         builder: (context) => TempleThumbnailScreen(
-          date: _templeData[position]['date'],
-          temple: _templeData[position]['temple'],
-          address: _templeData[position]['address'],
-          station: _templeData[position]['station'],
+          data: _templeData[position],
         ),
       ),
     );

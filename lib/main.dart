@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'temple_list.dart';
+import 'package:flutter/services.dart';
 
 void main() {
+  //画面向き指定
+  SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp, //縦固定
+    ],
+  );
+
   runApp(MyApp());
 }
 
