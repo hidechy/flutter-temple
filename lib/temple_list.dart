@@ -49,7 +49,7 @@ class _TempleListState extends State<TempleList> {
       );
     }
 
-    _selectedYear = (widget.year == '') ? '2020' : widget.year;
+    _selectedYear = (widget.year == '') ? explodedSelectedDate[0] : widget.year;
 
     Response response =
         await get('http://toyohide.work/Temple/${_selectedYear}/templelistapi');
@@ -58,12 +58,7 @@ class _TempleListState extends State<TempleList> {
       Map data = jsonDecode(response.body);
 
       for (int i = 0; i < data['data'].length; i++) {
-        var _map = Map();
-        _map['date'] = data['data'][i]['date'];
-        _map['temple'] = data['data'][i]['temple'];
-        _map['address'] = data['data'][i]['address'];
-        _map['station'] = data['data'][i]['station'];
-        _templeData.add(_map);
+        _templeData.add(data['data'][i]);
       }
 
       isLoading = true;

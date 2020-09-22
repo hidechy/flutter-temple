@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:flutter_advanced_networkimage/provider.dart';
@@ -18,6 +19,15 @@ class TempleThumbnailScreen extends StatefulWidget {
 class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
   List<Map<dynamic, dynamic>> _templePhotoData = List();
 
+  GoogleMapController mapController;
+
+  LatLng _latLng;
+  CameraPosition _cameraPosition;
+
+  Set<Marker> _markers = {};
+
+  bool _mapDisplay = true;
+
   /**
    * 初期動作
    */
@@ -32,6 +42,20 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
    * 初期データ作成
    */
   void _makeDefaultDisplayData() async {
+    _latLng = LatLng(widget.data['lat'], widget.data['lng']);
+
+    _cameraPosition = CameraPosition(
+      target: _latLng,
+      zoom: 13.0,
+    );
+
+    _markers.add(
+      Marker(
+        markerId: MarkerId('marker_1'),
+        position: _latLng,
+      ),
+    );
+
     Response response = await get(
         'http://toyohide.work/Temple/${widget.data['date']}/templephotoapi');
 
@@ -76,6 +100,7 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
           ),
           Column(
             children: <Widget>[
+              //------------------------// temple
               Container(
                 width: double.infinity,
                 child: Card(
@@ -84,12 +109,59 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                   ),
                   color: Colors.black.withOpacity(0.3),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Text(
-                        '${widget.data['temple']}\n${widget.data['address']}\n${widget.data['station']}'),
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text('${widget.data['temple']}'),
                   ),
                 ),
               ),
+              //------------------------//
+              //------------------------// map
+              (_mapDisplay)
+                  ? Container(
+                      height: 200,
+                      width: MediaQuery.of(context).size.width,
+                      child: GoogleMap(
+                        mapType: MapType.normal,
+                        initialCameraPosition: _cameraPosition,
+                        onMapCreated: _onMapCreated,
+                        markers: _markers,
+                      ),
+                    )
+                  : Container(),
+              //------------------------//
+              //------------------------// address
+              Container(
+                width: double.infinity,
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  color: Colors.black.withOpacity(0.3),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text('${_getDisplayText(widget.data)}'),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
+                          width: 60,
+                          child: IconButton(
+                            icon: Icon(Icons.map),
+                            onPressed: () => _mapDisplayChange(),
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              //------------------------//
+              //------------------------// photo
               Expanded(
                 child: Card(
                   shape: RoundedRectangleBorder(
@@ -125,11 +197,23 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                   ),
                 ),
               ),
+              //------------------------//
             ],
           ),
         ],
       ),
     );
+  }
+
+  /**
+   * 表示文字列取得
+   */
+  String _getDisplayText(Map data) {
+    String ret = '';
+    ret += data['address'];
+    ret += '\n';
+    ret += data['station'];
+    return ret;
   }
 
   /**
@@ -145,5 +229,24 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
         ),
       ),
     );
+  }
+
+  /**
+   * マップ表示
+   */
+  void _onMapCreated(GoogleMapController controller) {
+    setState(
+      () {
+        mapController = controller;
+      },
+    );
+  }
+
+  /**
+   * マップ表示切り替え
+   */
+  _mapDisplayChange() {
+    _mapDisplay = !_mapDisplay;
+    setState(() {});
   }
 }

@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.16.1
   flutter_native_splash: ^0.1.9
   flutter_advanced_networkimage: ^0.7.0
+  google_maps_flutter: ^0.5.32
 
 dev_dependencies:
   flutter_test:
