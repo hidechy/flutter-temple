@@ -22,11 +22,12 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
   GoogleMapController mapController;
 
   LatLng _latLng;
-  CameraPosition _cameraPosition;
+  CameraPosition _cameraPosition = null;
 
   Set<Marker> _markers = {};
 
   bool _mapDisplay = true;
+  bool _mapBtnDisplay = true;
 
   /**
    * 初期動作
@@ -42,20 +43,6 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
    * 初期データ作成
    */
   void _makeDefaultDisplayData() async {
-    _latLng = LatLng(widget.data['lat'], widget.data['lng']);
-
-    _cameraPosition = CameraPosition(
-      target: _latLng,
-      zoom: 13.0,
-    );
-
-    _markers.add(
-      Marker(
-        markerId: MarkerId('marker_1'),
-        position: _latLng,
-      ),
-    );
-
     Response response = await get(
         'http://toyohide.work/Temple/${widget.data['date']}/templephotoapi');
 
@@ -74,6 +61,32 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
         _templePhotoData.add(_map);
       }
     }
+
+    //---------------------------------------//
+    Response response2 = await get(
+        'http://toyohide.work/Temple/${widget.data['date']}/templelatlngapi');
+
+    if (response2 != null) {
+      Map data2 = jsonDecode(response2.body);
+
+      _latLng = LatLng(data2['data']['lat'], data2['data']['lng']);
+
+      _cameraPosition = CameraPosition(
+        target: _latLng,
+        zoom: 13.0,
+      );
+
+      _markers.add(
+        Marker(
+          markerId: MarkerId('marker_1'),
+          position: _latLng,
+        ),
+      );
+    } else {
+      _mapDisplay = false;
+      _mapBtnDisplay = false;
+    }
+    //---------------------------------------//
 
     setState(() {});
   }
@@ -116,7 +129,9 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
               ),
               //------------------------//
               //------------------------// map
-              (_mapDisplay)
+              (_mapDisplay == true &&
+                      _mapBtnDisplay == true &&
+                      _cameraPosition != null)
                   ? Container(
                       height: 200,
                       width: MediaQuery.of(context).size.width,
@@ -145,17 +160,19 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                           child: Text('${_getDisplayText(widget.data)}'),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                          width: 60,
-                          child: IconButton(
-                            icon: Icon(Icons.map),
-                            onPressed: () => _mapDisplayChange(),
-                            color: Colors.greenAccent,
-                          ),
-                        ),
-                      ),
+                      (_mapBtnDisplay)
+                          ? Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Container(
+                                width: 60,
+                                child: IconButton(
+                                  icon: Icon(Icons.map),
+                                  onPressed: () => _mapDisplayChange(),
+                                  color: Colors.greenAccent,
+                                ),
+                              ),
+                            )
+                          : Container(),
                     ],
                   ),
                 ),
