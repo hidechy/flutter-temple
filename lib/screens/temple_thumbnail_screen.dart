@@ -26,9 +26,6 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
 
   Set<Marker> _markers = {};
 
-  bool _mapDisplay = true;
-  bool _mapBtnDisplay = true;
-
   /**
    * 初期動作
    */
@@ -78,13 +75,10 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
 
       _markers.add(
         Marker(
-          markerId: MarkerId('marker_1'),
+          markerId: MarkerId('${widget.data['temple']}'),
           position: _latLng,
         ),
       );
-    } else {
-      _mapDisplay = false;
-      _mapBtnDisplay = false;
     }
     //---------------------------------------//
 
@@ -97,12 +91,10 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.data['date']}'),
-        centerTitle: true,
-      ),
       body: Stack(
+        fit: StackFit.expand,
         children: <Widget>[
+          //------------------------//
           Image.asset(
             'assets/image/bg.png',
             width: double.infinity,
@@ -111,110 +103,87 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
             color: Colors.black.withOpacity(0.7),
             colorBlendMode: BlendMode.darken,
           ),
-          Column(
-            children: <Widget>[
-              //------------------------// temple
-              Container(
-                width: double.infinity,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  color: Colors.black.withOpacity(0.3),
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text('${widget.data['temple']}'),
-                  ),
-                ),
-              ),
-              //------------------------//
-              //------------------------// map
-              (_mapDisplay == true &&
-                      _mapBtnDisplay == true &&
-                      _cameraPosition != null)
-                  ? Container(
-                      height: 200,
-                      width: MediaQuery.of(context).size.width,
-                      child: GoogleMap(
-                        mapType: MapType.normal,
-                        initialCameraPosition: _cameraPosition,
-                        onMapCreated: _onMapCreated,
-                        markers: _markers,
-                      ),
-                    )
-                  : Container(),
-              //------------------------//
-              //------------------------// address
-              Container(
-                width: double.infinity,
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  color: Colors.black.withOpacity(0.3),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Padding(
+          //------------------------//
+          CustomScrollView(
+            slivers: <Widget>[
+              SliverAppBar(
+                title: Text('${widget.data['date']}'),
+                backgroundColor: Colors.black.withOpacity(0.1),
+                pinned: true,
+                floating: true,
+                expandedHeight: 450.0,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        //------------------------// temple
+                        Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text('${_getDisplayText(widget.data)}'),
+                          child: Text('${widget.data['temple']}'),
                         ),
-                      ),
-                      (_mapBtnDisplay)
-                          ? Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Container(
-                                width: 60,
-                                child: IconButton(
-                                  icon: Icon(Icons.map),
-                                  onPressed: () => _mapDisplayChange(),
-                                  color: Colors.greenAccent,
-                                ),
-                              ),
-                            )
-                          : Container(),
-                    ],
-                  ),
-                ),
-              ),
-              //------------------------//
-              //------------------------// photo
-              Expanded(
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  color: Colors.black.withOpacity(0.3),
-                  child: CustomScrollView(
-                    slivers: <Widget>[
-                      SliverGrid.count(
-                        crossAxisCount: 3,
-                        children: (_templePhotoData.isEmpty)
-                            ? [Container()]
-                            : List.generate(
-                                _templePhotoData.length,
-                                (int index) => InkWell(
-                                  onTap: () => _openPhotoScreen(context, index),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Hero(
-                                      tag: _templePhotoData[index]['id'],
-                                      child: TransitionToImage(
-                                        image: AdvancedNetworkImage(
-                                          _templePhotoData[index]['photo'],
-                                          useDiskCache: true,
-                                        ),
-                                      ),
-                                    ),
+                        //------------------------//
+                        //------------------------// map
+                        Container(
+                          height: 250,
+                          width: MediaQuery.of(context).size.width,
+                          child: (_cameraPosition != null)
+                              ? GoogleMap(
+                                  mapType: MapType.normal,
+                                  initialCameraPosition: _cameraPosition,
+                                  onMapCreated: _onMapCreated,
+                                  markers: _markers,
+                                )
+                              : Container(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      CircularProgressIndicator(),
+                                    ],
                                   ),
                                 ),
-                              ),
-                      ),
-                    ],
+                        ),
+                        //------------------------//
+                        //------------------------// address
+                        Container(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Text('${_getDisplayText(widget.data)}'),
+                          ),
+                        ),
+                        //------------------------//
+                      ],
+                    ),
                   ),
                 ),
               ),
-              //------------------------//
+              /////////////////////////////////////
+              SliverGrid.count(
+                crossAxisCount: 3,
+                children: (_templePhotoData.isEmpty)
+                    ? [Container()]
+                    : List.generate(
+                        _templePhotoData.length,
+                        (int index) => InkWell(
+                          onTap: () => _openPhotoScreen(context, index),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Hero(
+                              tag: _templePhotoData[index]['id'],
+                              child: TransitionToImage(
+                                image: AdvancedNetworkImage(
+                                  _templePhotoData[index]['photo'],
+                                  useDiskCache: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+              ),
+              /////////////////////////////////////
             ],
           ),
         ],
@@ -252,18 +221,7 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
    * マップ表示
    */
   void _onMapCreated(GoogleMapController controller) {
-    setState(
-      () {
-        mapController = controller;
-      },
-    );
-  }
-
-  /**
-   * マップ表示切り替え
-   */
-  _mapDisplayChange() {
-    _mapDisplay = !_mapDisplay;
+    mapController = controller;
     setState(() {});
   }
 }
