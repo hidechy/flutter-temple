@@ -169,7 +169,7 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                         (int index) => InkWell(
                           onTap: () => _openPhotoScreen(context, index),
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(4.0),
                             child: Hero(
                               tag: _templePhotoData[index]['id'],
                               child: TransitionToImage(
@@ -177,6 +177,8 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                                   _templePhotoData[index]['photo'],
                                   useDiskCache: true,
                                 ),
+                                placeholder: const Icon(Icons.broken_image),
+                                fit: BoxFit.cover,
                               ),
                             ),
                           ),
