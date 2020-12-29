@@ -118,12 +118,16 @@ class _TempleThumbnailScreenState extends State<TempleThumbnailScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        //------------------------// temple
                         Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text('${widget.data['temple']}'),
+                          child: Column(
+                            children: <Widget>[
+                              Text('${widget.data['temple']}'),
+                              Text('${widget.data['gohonzon']}')
+                            ],
+                          ),
                         ),
-                        //------------------------//
+
                         //------------------------// map
                         Container(
                           height: 250,
