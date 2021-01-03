@@ -9,6 +9,7 @@ import 'package:temple/screens/temple_photo_screen.dart';
 
 class TempleThumbnailScreen extends StatefulWidget {
   final Map data;
+
   TempleThumbnailScreen({
     @required this.data,
   });

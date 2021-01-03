@@ -125,6 +125,11 @@ class _TempleListState extends State<TempleList> {
    * リストアイテム表示
    */
   Widget _listItem({int position}) {
+    var _value = '';
+    _value += _templeData[position]['date'];
+    _value += "\n";
+    _value += _templeData[position]['temple'];
+
     return Card(
       color: Colors.black.withOpacity(0.3),
       elevation: 10.0,
@@ -132,8 +137,8 @@ class _TempleListState extends State<TempleList> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: ListTile(
-        title: Text(
-            '${_templeData[position]['date']}\n${_templeData[position]['temple']}'),
+        leading: Image.network(_templeData[position]['photo']),
+        title: Text('${_value}'),
         onTap: () =>
             _goTemplePhotoDisplayScreen(context: context, position: position),
       ),

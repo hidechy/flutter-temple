@@ -4,6 +4,7 @@ import 'package:flutter_advanced_networkimage/transition.dart';
 
 class TemplePhotoScreen extends StatefulWidget {
   final Map photo;
+
   TemplePhotoScreen({@required this.photo});
 
   @override
