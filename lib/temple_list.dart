@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 
+import 'screens/temple_map_display_screen.dart';
 import 'screens/temple_thumbnail_screen.dart';
 
 class TempleList extends StatefulWidget {
@@ -88,18 +89,33 @@ class _TempleListState extends State<TempleList> {
           ),
           Column(
             children: <Widget>[
+              //---------------------------------//
               Container(
                 alignment: Alignment.topRight,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton(
-                    dropdownColor: Colors.black.withOpacity(0.1),
-                    items: _dropdownYears,
-                    value: _selectedYear,
-                    onChanged: (value) => _goTempleList(value: value),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          icon: Icon(Icons.map),
+                          onPressed: () => _goTempleMapDisplayScreen(),
+                        ),
+                      ),
+                      DropdownButton(
+                        dropdownColor: Colors.black.withOpacity(0.1),
+                        items: _dropdownYears,
+                        value: _selectedYear,
+                        onChanged: (value) => _goTempleList(value: value),
+                      ),
+                    ],
                   ),
                 ),
               ),
+              //---------------------------------//
+
               Expanded(
                 child: (isLoading)
                     ? ListView.builder(
@@ -168,6 +184,20 @@ class _TempleListState extends State<TempleList> {
       MaterialPageRoute(
         builder: (context) => TempleThumbnailScreen(
           data: _templeData[position],
+        ),
+      ),
+    );
+  }
+
+  /**
+   *
+   */
+  _goTempleMapDisplayScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TempleMapDisplayScreen(
+          year: _selectedYear,
         ),
       ),
     );
