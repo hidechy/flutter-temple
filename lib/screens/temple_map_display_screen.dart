@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'dart:convert';
 import 'package:http/http.dart';
 
@@ -12,7 +14,12 @@ class TempleMapDisplayScreen extends StatefulWidget {
 }
 
 class _TempleMapDisplayScreenState extends State<TempleMapDisplayScreen> {
-  List<Map<dynamic, dynamic>> _templeLatLngData = List();
+  GoogleMapController mapController;
+
+  LatLng _latLng;
+  CameraPosition _cameraPosition = null;
+
+  Set<Marker> _markers = {};
 
   /**
    * 初期動作
@@ -34,18 +41,34 @@ class _TempleMapDisplayScreenState extends State<TempleMapDisplayScreen> {
     if (response != null) {
       Map data = jsonDecode(response.body);
 
+      _latLng = LatLng(data['home']['lat'], data['home']['lng']);
+
+      _cameraPosition = CameraPosition(
+        target: _latLng,
+        zoom: 13.0,
+      );
+
       for (int i = 0; i < data['data'].length; i++) {
-        _templeLatLngData.add(data['data'][i]);
+        _markers.add(
+          Marker(
+            markerId: MarkerId('${data['data'][i]['temple']}'),
+            position: LatLng(
+              double.parse(data['data'][i]['lat']),
+              double.parse(data['data'][i]['lng']),
+            ),
+            infoWindow: InfoWindow(title: data['data'][i]['temple']),
+          ),
+        );
       }
     }
-
-    print(_templeLatLngData);
 
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.year}'),
@@ -60,11 +83,27 @@ class _TempleMapDisplayScreenState extends State<TempleMapDisplayScreen> {
             color: Colors.black.withOpacity(0.7),
             colorBlendMode: BlendMode.darken,
           ),
-          Column(
-            children: <Widget>[],
-          ),
+          (_cameraPosition != null)
+              ? GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: _cameraPosition,
+                  onMapCreated: _onMapCreated,
+                  markers: _markers,
+                )
+              : Container(
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                ),
         ],
       ),
     );
+  }
+
+  /**
+   * マップ表示
+   */
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    setState(() {});
   }
 }
